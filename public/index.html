@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pakwheels Clone</title>
   <style>
     body {
@@ -19,6 +20,7 @@
       padding: 10px;
       border: 1px solid #ccc;
       border-radius: 6px;
+      font-size: 1rem;
     }
     button {
       padding: 10px 20px;
@@ -27,6 +29,7 @@
       border: none;
       border-radius: 6px;
       cursor: pointer;
+      font-size: 1rem;
     }
     button:disabled {
       background-color: #999;
@@ -40,7 +43,8 @@
       box-shadow: 0 0 5px rgba(0,0,0,0.1);
     }
     .car img {
-      max-width: 100%;
+      width: 100%;
+      max-height: 200px;
       object-fit: cover;
       border-radius: 6px;
     }
@@ -48,9 +52,11 @@
       display: flex;
       gap: 10px;
       margin-bottom: 20px;
+      flex-wrap: wrap;
     }
     .filters select {
       flex: 1;
+      min-width: 150px;
     }
     #toast {
       display: none;
@@ -62,13 +68,47 @@
       padding: 10px 20px;
       border-radius: 8px;
       z-index: 9999;
+      font-size: 0.9rem;
     }
-  </style>
+    header {
+      display: flex;
+      align-items: center;
+      background: white;
+      padding: 10px 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      justify-content: center;
+    }
+    header img {
+      max-height: 50px;
+      width: auto;
+    }
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+      .filters {
+        flex-direction: column;
+      }
+      .filters select {
+        width: 100%;
+      }
+      button {
+        width: 100%;
+      }
+      .car {
+        padding: 10px;
+      }
+    }
+  </style>  
 </head>
 <body>
-    <header style="display: flex; align-items: center; background: white; padding: 10px 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px;">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/7/7a/PakWheels_logo.png" alt="Pakwheels" style="max-height: 60px;" />
+    <header style="position: sticky; top: 0; z-index: 999; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 10px 0; margin-bottom: 20px;">
+        <div style="max-width: 800px; margin: auto; display: flex; justify-content: space-between; align-items: center; padding: 0 20px;">
+          <img src="/pkwheel.png" alt="PakWheels" style="max-height: 80px;" />
+        </div>
       </header>
+      
       
   <h1>Post a Car Ad</h1>
   <form id="carForm" enctype="multipart/form-data">
@@ -141,53 +181,53 @@
     }
 
     async function loadCars() {
-      const res = await fetch('/api/cars');
-      const cars = await res.json();
+  const res = await fetch('/api/cars');
+  const cars = await res.json();
 
-      populateFilters(cars);
+  populateFilters(cars);
 
-      const brand = brandFilter.value;
-      const model = modelFilter.value;
+  const brand = brandFilter.value;
+  const model = modelFilter.value;
 
-      const filtered = cars.filter(car =>
-        (!brand || car.brand === brand) &&
-        (!model || car.model === model) &&
-        (currentTab === 'sold' ? car.sold : !car.sold)
-      );
+  const filtered = cars.filter(car =>
+    (!brand || car.brand === brand) &&
+    (!model || car.model === model) &&
+    (currentTab === 'sold' ? car.sold : !car.sold)
+  );
 
-      carList.innerHTML = filtered.length === 0
-        ? `<p>No cars found.</p>`
-        : filtered.map(car => `
-          <div class="car">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <span><strong>Rs ${car.price}</strong></span>
-              <span style="color:#666;">
-                📍 <a href="https://www.google.com/maps/search/${encodeURIComponent(car.location || '')}" target="_blank" style="color:#0056A0; text-decoration: none;">
-                  ${car.location || 'Unknown'}
-                </a>
-              </span>
-            </div>
-            <h3 style="margin-top: 5px;">${car.title}</h3>
-            <p><strong>${car.brand} ${car.model}</strong></p>
-            <p>${car.description}</p>
+  carList.innerHTML = filtered.length === 0
+    ? `<p>No cars found.</p>`
+    : filtered.map(car => `
+      <div class="car">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span><strong>Rs ${car.price}</strong></span>
+          <span style="color:#666;">
+            📍 <a href="https://www.google.com/maps/search/${encodeURIComponent(car.location || '')}" target="_blank" style="color:#0056A0; text-decoration: none;">
+              ${car.location || 'Unknown'}
+            </a>
+          </span>
+        </div>
+        <h3 style="margin-top: 5px;">${car.title}</h3>
+        <p><strong>${car.brand} ${car.model}</strong></p>
+        <pre style="white-space: pre-wrap;">${car.description}</pre>
 
-            ${car.images && car.images.length > 0 ? `
-              <div style="display: flex; overflow-x: auto; gap: 10px; margin-top: 10px;">
-                ${car.images.map(img => `
-                  <div style="position: relative; flex: 0 0 200px;">
-                    <img src="${img}" alt="Car Image" style="width: 100%; height: 150px; object-fit: cover; border-radius: 6px;">
-                    ${car.sold ? `<div style="position: absolute; top: 10px; left: 10px; background: red; color: white; padding: 5px 10px; border-radius: 6px;">SOLD</div>` : ''}
-                  </div>
-                `).join('')}
+        ${car.images && car.images.length > 0 ? `
+          <div style="display: flex; overflow-x: auto; gap: 10px; margin-top: 10px;">
+            ${car.images.map(img => `
+              <div style="position: relative; flex: 0 0 200px;">
+                <img src="${img}" alt="Car Image" style="width: 100%; height: 150px; object-fit: cover; border-radius: 6px;">
+                ${car.sold ? `<div style="position: absolute; top: 10px; left: 10px; background: red; color: white; padding: 5px 10px; border-radius: 6px;">SOLD</div>` : ''}
               </div>
-            ` : ''}
-
-            ${car.sold
-              ? `<p><strong>Sold to:</strong> ${car.buyerName}</p>`
-              : `<div style="margin-top: 10px;"><button onclick="buyCar(${car.id})">Buy Now</button></div>`}
+            `).join('')}
           </div>
-        `).join('');
-    }
+        ` : ''}
+
+        ${car.sold
+          ? `<p><strong>Sold to:</strong> ${car.buyerName}</p>`
+          : `<div style="margin-top: 10px;"><button onclick="buyCar(${car.id})">Buy Now</button></div>`}
+      </div>
+    `).join('');
+}
 
     async function buyCar(id) {
       const name = prompt("Enter your name to buy this car:");
