@@ -34,7 +34,9 @@
     "model": "Swift GLX 2024",
     "images": [
       "/uploads/1743667111093-368320520.jpg"
-    ]
+    ],
+    "sold": true,
+    "buyerName": "Siraj Recording"
   },
   {
     "id": 1743674176430,
@@ -58,6 +60,19 @@
     "location": "Bahadurabad, Karachi, Pakistan",
     "images": [
       "/uploads/1743674458638-940777419.jpg"
+    ],
+    "sold": false
+  },
+  {
+    "id": 1743685468156,
+    "title": "Suzuki Swift GLX",
+    "description": "Key Specifications:\r\nModel Year: 2024\r\nRegistered Year: 2024\r\nPMileage: 11000 KMs\r\nColor: White\r\nTransmission: Automatic CVT",
+    "price": "47.5 Lacs",
+    "brand": "Suzuki",
+    "model": "2023 GLX",
+    "location": "Tariq Road, Karachi",
+    "images": [
+      "/uploads/1743685468137-821041375.jpg"
     ],
     "sold": false
   }
