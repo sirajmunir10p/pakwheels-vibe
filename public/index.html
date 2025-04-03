@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pakwheels Clone</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 800px;
+      margin: auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    h1, h2 {
+      color: #0056A0;
+    }
+    input, textarea, select {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #0056A0;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:disabled {
+      background-color: #999;
+      cursor: not-allowed;
+    }
+    .car {
+      background: white;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    .car img {
+      max-width: 100%;
+      max-height: 200px;
+      object-fit: cover;
+      margin-top: 10px;
+      border-radius: 6px;
+    }
+    .filters {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .filters select {
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
+  <h1>Post a Car Ad</h1>
+  <form id="carForm" enctype="multipart/form-data">
+    <input type="text" name="title" placeholder="Title" required />
+    <textarea name="description" placeholder="Description" required></textarea>
+    <input type="text" name="price" placeholder="Price" required />
+    <input type="text" name="location" placeholder="Location (e.g. Karachi)" required />
+    <input type="text" name="brand" placeholder="Brand" required />
+    <input type="text" name="model" placeholder="Model" required />
+    <input type="file" name="images" accept="image/*" multiple />
+    <button type="submit">Post Ad</button>
+  </form>
+
+  <h2>All Car Ads</h2>
+
+  <div class="filters">
+    <select id="brandFilter"><option value="">All Brands</option></select>
+    <select id="modelFilter"><option value="">All Models</option></select>
+  </div>
+  
+  <div style="margin-bottom: 20px;">
+    <button onclick="switchTab('available')" id="tab-available">Available</button>
+    <button onclick="switchTab('sold')" id="tab-sold">Sold</button>
+  </div>
+  
+  <div id="carList"></div>
+  
+  <div id="toast" style="display:none; position:fixed; bottom:20px; right:20px; background:#0056A0; color:white; padding:10px 20px; border-radius:8px;">
+    🎉 Car successfully purchased!
+  </div>
+  
+
+ <script>
+  const form = document.getElementById('carForm');
+  const carList = document.getElementById('carList');
+  const brandFilter = document.getElementById('brandFilter');
+  const modelFilter = document.getElementById('modelFilter');
+
+  let currentTab = 'available';
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(form);
+    await fetch('/api/cars', {
+      method: 'POST',
+      body: formData
+    });
+    form.reset();
+    switchTab('available'); // go back to available tab after posting
+  });
+
+  function switchTab(tab) {
+    currentTab = tab;
+    document.getElementById('tab-available').style.backgroundColor = tab === 'available' ? '#0056A0' : '#ccc';
+    document.getElementById('tab-sold').style.backgroundColor = tab === 'sold' ? '#0056A0' : '#ccc';
+    loadCars();
+  }
+
+  function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.style.display = 'block';
+    setTimeout(() => toast.style.display = 'none', 2500);
+  }
+
+  function populateFilters(cars) {
+    const brands = [...new Set(cars.map(car => car.brand))];
+    const models = [...new Set(cars.map(car => car.model))];
+
+    brandFilter.innerHTML = '<option value="">All Brands</option>' +
+      brands.map(b => `<option value="${b}">${b}</option>`).join('');
+
+    modelFilter.innerHTML = '<option value="">All Models</option>' +
+      models.map(m => `<option value="${m}">${m}</option>`).join('');
+  }
+
+  async function loadCars() {
+  const res = await fetch('/api/cars');
+  const cars = await res.json();
+
+  populateFilters(cars);
+
+  const brand = brandFilter.value;
+  const model = modelFilter.value;
+
+  const filtered = cars.filter(car =>
+    (!brand || car.brand === brand) &&
+    (!model || car.model === model) &&
+    (currentTab === 'sold' ? car.sold : !car.sold)
+  );
+
+  carList.innerHTML = filtered.length === 0
+    ? `<p>No cars found.</p>`
+    : filtered.map(car => `
+      <div class="car">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span><strong>Rs ${car.price}</strong></span>
+          <span style="color:#666;">
+  📍 <a href="https://www.google.com/maps/search/${encodeURIComponent(car.location || '')}" target="_blank" style="color:#0056A0; text-decoration: none;">
+    ${car.location || 'Unknown'}
+    </a>
+</span>
+        </div>
+        <h3 style="margin-top: 5px;">${car.title}</h3>
+        <p><strong>${car.brand} ${car.model}</strong></p>
+        <p>${car.description}</p>
+        ${car.images && car.images.length > 0 ? `
+  <div style="display: flex; overflow-x: auto; gap: 10px; margin-top: 10px;">
+    ${car.images.map(img => `
+      <div style="position: relative; flex: 0 0 200px;">
+        <img src="${img}" alt="Car Image" style="width: 100%; height: 150px; object-fit: cover; border-radius: 6px;">
+        ${car.sold ? `<div style="position: absolute; top: 10px; left: 10px; background: red; color: white; padding: 5px 10px; border-radius: 6px;">SOLD</div>` : ''}
+      </div>
+    `).join('')}
+  </div>
+` : car.image ? `
+  <div style="position: relative; margin-top: 10px;">
+    <img src="${car.image}" alt="Car Image" style="width: 100%; height: 150px; object-fit: cover; border-radius: 6px;">
+    ${car.sold ? `<div style="position: absolute; top: 10px; left: 10px; background: red; color: white; padding: 5px 10px; border-radius: 6px;">SOLD</div>` : ''}
+  </div>
+` : ''}
+      </div>
+    `).join('');
+}
+
+  async function buyCar(id) {
+    const name = prompt("Enter your name to buy this car:");
+    if (!name) return;
+
+    await fetch(`/api/cars/${id}/buy`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ buyerName: name })
+    });
+
+    showToast("🎉 Car successfully purchased!");
+    loadCars();
+  }
+
+  brandFilter.addEventListener('change', loadCars);
+  modelFilter.addEventListener('change', loadCars);
+
+  // Initial state
+  switchTab('available');
+</script>
+</body>
+</html>
