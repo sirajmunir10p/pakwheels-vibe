@@ -6,9 +6,11 @@
     "price": "7000000",
     "brand": "Honda",
     "model": "Civic 2022",
-    "image": "/uploads/1743665987400-703216746.png",
     "sold": true,
-    "buyerName": "Siraj"
+    "buyerName": "Siraj",
+    "images": [
+      "/uploads/1743665987400-703216746.png"
+    ]
   },
   {
     "id": 1743666728844,
@@ -17,7 +19,11 @@
     "price": "69.5 lacs",
     "brand": "Honda",
     "model": "Civic 2021",
-    "image": "/uploads/1743666728840-424005366.jpg"
+    "images": [
+      "/uploads/1743666728840-424005366.jpg"
+    ],
+    "sold": true,
+    "buyerName": "Siraj Munir Updated"
   },
   {
     "id": 1743667111099,
@@ -26,6 +32,33 @@
     "price": "49.3 Lacs",
     "brand": "Suzuki",
     "model": "Swift GLX 2024",
-    "image": "/uploads/1743667111093-368320520.jpg"
+    "images": [
+      "/uploads/1743667111093-368320520.jpg"
+    ]
+  },
+  {
+    "id": 1743674176430,
+    "title": "Suzuki Cultus AGS 2022",
+    "description": "Key Specifications:\r\nModel Year: 2024\r\nRegistered Year: 2024\r\nPMileage: 11000 KMs\r\nColor: White\r\nTransmission: Automatic CVT",
+    "price": "35 Lacs",
+    "brand": "Suzuki",
+    "model": "Cultus CXL AGS",
+    "location": "Lahore",
+    "image": null,
+    "sold": true,
+    "buyerName": "Asim"
+  },
+  {
+    "id": 1743674458642,
+    "title": "Cultus 2025",
+    "description": "Model 2025\r\nTop of the line\r\n1st owner\r\nBrand new condition\r\nB2B geniune 100%",
+    "price": "33 Lacs",
+    "brand": "Suzuki",
+    "model": "Cultus VXL AGS",
+    "location": "Bahadurabad, Karachi, Pakistan",
+    "images": [
+      "/uploads/1743674458638-940777419.jpg"
+    ],
+    "sold": false
   }
 ]
